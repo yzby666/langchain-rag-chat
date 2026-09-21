@@ -1,5 +1,7 @@
 # langchain-rag-chat
 
+> See Document: [English](https://github.com/yzby666/langchain-rag-chat) | [中文](https://github.com/yzby666/langchain-rag-chat/blob/main/README.zh-CN.md)
+
 A TypeScript Retrieval-Augmented Generation (RAG) chat library built on the LangChain ecosystem. It combines document loading, vector retrieval, query expansion, category-based retrieval, and answer generation into a single `RAGChat` class.
 
 ## Features
