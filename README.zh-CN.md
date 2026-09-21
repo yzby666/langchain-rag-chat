@@ -1,5 +1,7 @@
 # langchain-rag-chat
 
+> 参见文档：[English](https://github.com/yzby666/langchain-rag-chat) | [中文](https://github.com/yzby666/langchain-rag-chat/blob/main/README.zh-CN.md)
+
 一个基于 LangChain 生态的 TypeScript RAG（检索增强生成）聊天库。它将文档加载、向量检索、问题扩展、分类检索和答案生成整合到一个 `RAGChat` 类中。
 
 ## 特性
@@ -84,16 +86,16 @@ export interface RAGOptions<Q extends string> {
 | ----------------------- | -------------------------- | ---- | ------------------- | ----------------------------------------------------------------------------------------- |
 | `chatModel`             | `ChatOpenAIFields`         | ✅   | —                   | 聊天模型配置（如 `{ model: "gpt-4o-mini", apiKey }`），用于问题分类、问题扩展和答案生成。 |
 | `vectorStore`           | `VectorStoreFactory`       | ❌   | `MemoryVectorStore` | 自定义向量存储工厂 `(embeddings) => VectorStore`。                                        |
-| `embeddings`            | `Embeddings`               | ❌   | —                   | 已创建好的 embedding 实例。与 `embeddingModelOptions` 同时提供时，优先使用 `embeddings`。                                               |
+| `embeddings`            | `Embeddings`               | ❌   | —                   | 已创建好的 embedding 实例。与 `embeddingModelOptions` 同时提供时，优先使用 `embeddings`。 |
 | `embeddingModelOptions` | `EmbeddingModelOptions`    | ❌   | —                   | 在未提供 `embeddings` 时，用于创建 embedding 模型的配置。                                 |
 | `enhancePrompt`         | `number`                   | ❌   | `3`                 | 由原始问题生成的扩展查询数量（Multi-Query）。小于 1 时不进行扩展。                        |
 | `category`              | `Q[]`                      | ❌   | `[]`                | 允许的问题分类数组，用于问题分类。为空时，`load()` 会从加载的资源类型中推断。             |
 | `enableClassification`  | `boolean`                  | ❌   | `true`              | 是否在检索前对问题进行分类。关闭后检索将不再按分类过滤。                                  |
 | `questionCategory`      | `[Q, string][]`            | ❌   | `[]`                | `[分类, 描述]` 的配对数组，为分类提示词描述每个分类的含义。                               |
-| `onStep`                | `(step, payload?) => void` | ❌   | —                   | 生命周期回调，在各阶段携带当前 payload 触发（见 `RAGStep`）。                                              |
-| `preRetrieve`           | `RunnableLike`             | ❌   | —                   | 在**检索之前**应用的 runnable，例如重写查询或注入上下文。                                       |
+| `onStep`                | `(step, payload?) => void` | ❌   | —                   | 生命周期回调，在各阶段携带当前 payload 触发（见 `RAGStep`）。                             |
+| `preRetrieve`           | `RunnableLike`             | ❌   | —                   | 在**检索之前**应用的 runnable，例如重写查询或注入上下文。                                 |
 | `postRetrieve`          | `RunnableLike`             | ❌   | —                   | 在**检索/压缩之后**应用的 runnable，例如重排或转换文档。                                  |
-| `loader`                | `CustomLoader<Q>`              | ❌   | —                   | 按文件后缀（如 `.txt`）注册的自定义文档加载器，可覆盖内置加载器。                         |
+| `loader`                | `CustomLoader<Q>`          | ❌   | —                   | 按文件后缀（如 `.txt`）注册的自定义文档加载器，可覆盖内置加载器。                         |
 
 > ⚠️ `embeddings` 与 `embeddingModelOptions` 至少需提供其一，否则构造函数会抛出异常。两者同时提供时优先使用 `embeddings`。
 
