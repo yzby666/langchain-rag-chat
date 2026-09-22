@@ -19,6 +19,7 @@ import type { LoadOptions, CustomLoader } from "../loaders";
 import type { VectorStoreRetrieverInput } from "@langchain/core/vectorstores";
 import type { ChatOpenAIFields } from "@langchain/openai";
 import type { RunnableConfig, RunnableLike } from "@langchain/core/runnables";
+import type { BaseChatModel } from "@langchain/core/language_models/chat_models";
 
 /**
  * Factory that builds a vector store from an embedding instance.
@@ -40,10 +41,18 @@ export type RAGStep =
 
 export interface RAGOptions<Q extends string> {
   /**
+   * Instantiated custom chat model.
+   *
+   * Takes precedence over `chatModel` when provided and is used for question
+   * classification, query expansion, answer generation, and answer streaming.
+   */
+  model?: BaseChatModel;
+
+  /**
    * Chat model configuration passed to `ChatOpenAI`.
    * Used for question classification, query expansion, and answer generation.
    */
-  chatModel: ChatOpenAIFields;
+  chatModel?: ChatOpenAIFields;
 
   /**
    * Custom vector store factory that receives the resolved embedding model
@@ -133,7 +142,7 @@ export class RAGChat<Q extends string> {
   /** Underlying vector store used for retrieval. */
   vectorStore: VectorStore;
   /** Chat model used for classification, expansion, and answering. */
-  chatModel: ReturnType<typeof createChatModel>;
+  model: BaseChatModel | null = null;
   /** Embedding model used to vectorize documents and queries. */
   embeddings: Embeddings;
   /** Number of expanded query variants to generate per question. */
@@ -156,6 +165,7 @@ export class RAGChat<Q extends string> {
   constructor(options: RAGOptions<Q>) {
     const {
       chatModel,
+      model,
       embeddings,
       embeddingModelOptions,
       enhancePrompt = 3,
@@ -166,6 +176,11 @@ export class RAGChat<Q extends string> {
       enableClassification = true,
       loader = null,
     } = options;
+    this.model = model ? model : chatModel ? createChatModel(chatModel) : null;
+
+    if (!this.model) {
+      throw new Error("Either 'chatModel' or 'model' must be provided");
+    }
 
     const em = embeddings
       ? embeddings
@@ -177,6 +192,7 @@ export class RAGChat<Q extends string> {
         "Either 'embeddings' or 'embeddingModelOptions' must be provided",
       );
     }
+
     this.enhancePrompt = enhancePrompt;
     this.category = category;
     this.embeddings = em;
@@ -185,7 +201,6 @@ export class RAGChat<Q extends string> {
     this.loader = loader;
     this.onStep = options.onStep;
 
-    this.chatModel = createChatModel(chatModel);
     this.preRetrieve = preRetrieve;
     this.postRetrieve = postRetrieve;
 
@@ -339,7 +354,7 @@ export class RAGChat<Q extends string> {
     questionCategory: [Q, string][] = this.questionCategory,
   ): Promise<Q | "other"> {
     const result = await classifyPrompt
-      .pipe(this.chatModel)
+      .pipe(this.model!)
       .pipe(new StringOutputParser())
       .invoke({
         category: category.join(" / "),
@@ -372,7 +387,7 @@ export class RAGChat<Q extends string> {
       return [question];
     }
     const result = await multiQueryPrompt
-      .pipe(this.chatModel)
+      .pipe(this.model!)
       .pipe(new StringOutputParser())
       .invoke({
         question,
@@ -388,7 +403,7 @@ export class RAGChat<Q extends string> {
 
   private async answer(context: string, question: string) {
     const result = await answerPrompt
-      .pipe(this.chatModel)
+      .pipe(this.model!)
       .pipe(new StringOutputParser())
       .invoke({
         question,
@@ -403,7 +418,7 @@ export class RAGChat<Q extends string> {
     options?: RunnableConfig,
   ) {
     return await answerPrompt
-      .pipe(this.chatModel)
+      .pipe(this.model!)
       .pipe(new StringOutputParser())
       .stream(
         {
