@@ -65,7 +65,8 @@ for await (const chunk of rag.stream("什么是光合作用？")) {
 
 ```ts
 export interface RAGOptions<Q extends string> {
-  chatModel: ChatOpenAIFields;
+  chatModel?: ChatOpenAIFields;
+  model?: BaseChatModel;
   vectorStore?: VectorStoreFactory;
   embeddings?: Embeddings;
   embeddingModelOptions?: EmbeddingModelOptions;
@@ -84,7 +85,8 @@ export interface RAGOptions<Q extends string> {
 
 | 配置项                  | 类型                       | 必填 | 默认值              | 作用                                                                                      |
 | ----------------------- | -------------------------- | ---- | ------------------- | ----------------------------------------------------------------------------------------- |
-| `chatModel`             | `ChatOpenAIFields`         | ✅   | —                   | 聊天模型配置（如 `{ model: "gpt-4o-mini", apiKey }`），用于问题分类、问题扩展和答案生成。 |
+| `chatModel`             | `ChatOpenAIFields`         | ❌   | —                   | 聊天模型配置（如 `{ model: "gpt-4o-mini", apiKey }`），用于问题分类、问题扩展和答案生成。 |
+| `model`             | `BaseChatModel`         | ❌   | —                   | 自定义大模型，用于问题分类、问题扩展和答案生成。 |
 | `vectorStore`           | `VectorStoreFactory`       | ❌   | `MemoryVectorStore` | 自定义向量存储工厂 `(embeddings) => VectorStore`。                                        |
 | `embeddings`            | `Embeddings`               | ❌   | —                   | 已创建好的 embedding 实例。与 `embeddingModelOptions` 同时提供时，优先使用 `embeddings`。 |
 | `embeddingModelOptions` | `EmbeddingModelOptions`    | ❌   | —                   | 在未提供 `embeddings` 时，用于创建 embedding 模型的配置。                                 |
@@ -97,7 +99,9 @@ export interface RAGOptions<Q extends string> {
 | `postRetrieve`          | `RunnableLike`             | ❌   | —                   | 在**检索/压缩之后**应用的 runnable，例如重排或转换文档。                                  |
 | `loader`                | `CustomLoader<Q>`          | ❌   | —                   | 按文件后缀（如 `.txt`）注册的自定义文档加载器，可覆盖内置加载器。                         |
 
-> ⚠️ `embeddings` 与 `embeddingModelOptions` 至少需提供其一，否则构造函数会抛出异常。两者同时提供时优先使用 `embeddings`。
+> ⚠️
+>  - `embeddings` 与 `embeddingModelOptions` 至少需提供其一，否则构造函数会抛出异常。两者同时提供时优先使用 `embeddings`。
+>  - `model` 与 `chatModel` 至少需提供其一，否则构造函数会抛出异常。两者同时提供时优先使用 `model`。
 
 ### `RAGStep`
 
