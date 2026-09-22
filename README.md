@@ -84,7 +84,8 @@ export interface RAGOptions<Q extends string> {
 
 | Option                  | Type                       | Required | Default             | Description                                                                                                                          |
 | ----------------------- | -------------------------- | -------- | ------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
-| `chatModel`             | `ChatOpenAIFields`         | ✅       | —                   | Chat model configuration (e.g. `{ model: "gpt-4o-mini", apiKey }`). Used for classification, query expansion, and answer generation. |
+| `chatModel`             | `ChatOpenAIFields`         | ❌       | —                   | Chat model configuration (e.g. `{ model: "gpt-4o-mini", apiKey }`). Used for classification, query expansion, and answer generation. |
+| `model`             | `BaseChatModel`         | ❌       | —                   | Instantiated custom chat model.  Takes precedence over `chatModel` when provided and is used for question classification, query expansion, answer generation, and answer streaming. |
 | `vectorStore`           | `VectorStoreFactory`       | ❌       | `MemoryVectorStore` | Factory `(embeddings) => VectorStore` for a custom vector store implementation.                                                      |
 | `embeddings`            | `Embeddings`               | ❌       | —                   | A ready-made embedding instance. Takes priority over `embeddingModelOptions` when both are provided.                                 |
 | `embeddingModelOptions` | `EmbeddingModelOptions`    | ❌       | —                   | Configuration to create the embedding model when `embeddings` is not supplied.                                                       |
