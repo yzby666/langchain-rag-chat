@@ -65,7 +65,8 @@ All options are passed to the `RAGChat` constructor through the `RAGOptions` int
 
 ```ts
 export interface RAGOptions<Q extends string> {
-  chatModel: ChatOpenAIFields;
+  chatModel?: ChatOpenAIFields;
+  model?: BaseChatModel;
   vectorStore?: VectorStoreFactory;
   embeddings?: Embeddings;
   embeddingModelOptions?: EmbeddingModelOptions;
