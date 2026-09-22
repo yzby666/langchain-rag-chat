@@ -98,8 +98,9 @@ export interface RAGOptions<Q extends string> {
 | `postRetrieve`          | `RunnableLike`             | ❌       | —                   | A runnable applied **after** retrieval/compression, e.g. to re-rank or transform documents.                                          |
 | `loader`                | `CustomLoader<Q>`          | ❌       | —                   | Custom document loaders keyed by file suffix (e.g. `".txt"`), overriding the built-in loaders.                                       |
 
-> ⚠️ Embedding: At least one of `embeddings` and `embeddingModelOptions` must be provided, otherwise the constructor throws. When both are provided, `embeddings` takes priority.
-> ⚠️ ChatModel: At least one of `model` and `chatModel` must be provided, otherwise the constructor throws. When both are provided, `model` takes priority.
+> ⚠️
+> - Embedding: At least one of `embeddings` and `embeddingModelOptions` must be provided, otherwise the constructor throws. When both are provided, `embeddings` takes priority.
+> - ChatModel: At least one of `model` and `chatModel` must be provided, otherwise the constructor throws. When both are provided, `model` takes priority.
 
 ### `RAGStep`
 
